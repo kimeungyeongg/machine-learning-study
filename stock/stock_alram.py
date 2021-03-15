@@ -7,7 +7,7 @@ Created on Wed Feb 24 09:44:33 2021
 
 
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QVBoxLayout,QHBoxLayout, QGridLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QVBoxLayout,QHBoxLayout, QGridLayout, QLineEdit
 from PyQt5.QtCore import Qt
 from bs4 import BeautifulSoup
 import urllib.request as req
@@ -21,8 +21,7 @@ res=req.urlopen(url)
 soup = BeautifulSoup(res, 'html.parser')
 
 
-
-def check_price():
+def check_price(codes= list):
     prices = list()
     for code in codes:
         url = 'https://finance.naver.com/item/main.nhn?code=' + code
@@ -37,9 +36,13 @@ def check_price():
         #prices = price.get_text()
         prices.append(price.get_text())
     
-    return prices
+    price1.setText(prices[0])
+    price2.setText(prices[1])
+    price3.setText(prices[2])
+    price4.setText(prices[3])
+    price5.setText(prices[4])
 
-def check_name():
+def check_name(codes= list):
     names = list()
     for code in codes:
         url = 'https://finance.naver.com/item/main.nhn?code=' + code
@@ -50,8 +53,21 @@ def check_name():
         soup = BeautifulSoup(html, 'html.parser')    
         name = soup.select_one('#middle > div.h_company > div.wrap_company > h2 > a').string
         names.append(name)
-    return names
         
+    name1.setText(names[0])
+    name2.setText(names[1])
+    name3.setText(names[2])
+    name4.setText(names[3])
+    name5.setText(names[4])
+  
+def btnclick():
+    global codes
+    codes[:] = []    
+    codes = textbox.text().split(",")
+    print(codes)
+    check_name(codes)
+    check_price(codes)
+    
 ################################################################################
 # 윈도우 창에 프로그램을 띄워줄 프로그램 
 ################################################################################
@@ -62,7 +78,9 @@ window.setWindowTitle('stock_alram')
 ################################################################################
 # 숫자, 연산자 입력시 출력되는 라벨창
 ################################################################################
-
+textbox = QLineEdit()
+textbtn = QPushButton('check')
+textbtn.clicked.connect(btnclick)
 
 # title
 title1 = QLabel()
@@ -115,44 +133,31 @@ price3.setFont(font1)
 price4.setFont(font1)
 price5.setFont(font1)
 
-names = check_name()
-name1.setText(names[0])
-name2.setText(names[1])
-name3.setText(names[2])
-name4.setText(names[3])
-name5.setText(names[4])
-
-prices = check_price()
-price1.setText(prices[0])
-price2.setText(prices[1])
-price3.setText(prices[2])
-price4.setText(prices[3])
-price5.setText(prices[4])
-
-
+check_name(codes)
+check_price(codes)
 ################################################################################
 # 화면 레이아웃 구성
 ################################################################################
 layout_main = QVBoxLayout()
-layout_sub1 = QGridLayout()
+layout_textbox = QHBoxLayout()
+layout_sub1 = QVBoxLayout()
+layout_list = QGridLayout()
 
-layout_sub1.addWidget(title1, 0, 0)
-layout_sub1.addWidget(title2, 0, 1)
-layout_sub1.addWidget(name1, 1, 0)
-layout_sub1.addWidget(name2, 2, 0)
-layout_sub1.addWidget(name3, 3, 0)
-layout_sub1.addWidget(name4, 4, 0)
-layout_sub1.addWidget(name5, 5, 0)
-layout_sub1.addWidget(price1, 1, 1)
-layout_sub1.addWidget(price2, 2, 1)
-layout_sub1.addWidget(price3, 3, 1)
-layout_sub1.addWidget(price4, 4, 1)
-layout_sub1.addWidget(price5, 5, 1)
+layout_textbox.addWidget(textbox)
+layout_textbox.addWidget(textbtn)
 
-################################################################################
-# 버튼
-################################################################################
-btn1 = QPushButton('1')
+layout_list.addWidget(title1, 0, 0)
+layout_list.addWidget(title2, 0, 1)
+layout_list.addWidget(name1, 1, 0)
+layout_list.addWidget(name2, 2, 0)
+layout_list.addWidget(name3, 3, 0)
+layout_list.addWidget(name4, 4, 0)
+layout_list.addWidget(name5, 5, 0)
+layout_list.addWidget(price1, 1, 1)
+layout_list.addWidget(price2, 2, 1)
+layout_list.addWidget(price3, 3, 1)
+layout_list.addWidget(price4, 4, 1)
+layout_list.addWidget(price5, 5, 1)
 
 ################################################################################
 # 버튼과 함수 연결
@@ -164,14 +169,17 @@ btn1.clicked.connect(pushbtn1)
 ################################################################################
 # 버튼 레이아웃 설정
 ################################################################################
-#layout_sub1.addWidget(btn1, 1, 2)
+#layout_sub2.addWidget(btn1, 1, 2)
 '''
-layout_sub1.addWidget(btn2, 0, 1)
+layout_sub2.addWidget(btn2, 0, 1)
 '''
 
 ################################################################################
 # 메인레이아웃에 버튼 레이아웃 추가
 ################################################################################
+
+layout_sub1.addLayout(layout_textbox)
+layout_sub1.addLayout(layout_list)
 layout_main.addLayout(layout_sub1)
 
 
